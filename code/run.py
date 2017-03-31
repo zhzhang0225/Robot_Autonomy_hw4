@@ -8,7 +8,9 @@ from SimpleRobot import SimpleRobot
 from SimpleEnvironment import SimpleEnvironment
 from GraspPlanner import GraspPlanner
 from AStarPlanner import AStarPlanner
-# TODO: Import the applicable RRTPlanner
+# TODO: Import the applicable RRTPlanner -done
+from RRTConnectPlanner import RRTConnectPlanner
+
 
 if __name__ == "__main__":
     
@@ -76,8 +78,8 @@ if __name__ == "__main__":
     base_env = SimpleEnvironment(herb_base, resolution)
 
     base_planner = AStarPlanner(base_env, visualize = False)
-    arm_planner = None
-    # TODO: Here initialize your arm planner
+    arm_planner = RRTConnectPlanner(arm_env, visualize =False)
+    # TODO: Here initialize your arm planner - done
   
     # add a table and move the robot into place
     table = env.ReadKinBodyXMLFile('models/objects/table.kinbody.xml')
