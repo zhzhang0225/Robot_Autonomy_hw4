@@ -26,7 +26,7 @@ class GraspPlanner(object):
         self.graspindices = self.gmodel.graspindices
         self.grasps = self.gmodel.grasps
         grasp_config = self.order_grasps_noisy()
-        graps_config = gmodel.getGlobalGraspTransform(grasp_config, collisionfree=True)
+        grasp_config = gmodel.getGlobalGraspTransform(grasp_config, collisionfree=True)
         
 
         return base_pose, grasp_config
