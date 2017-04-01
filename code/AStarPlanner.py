@@ -85,4 +85,5 @@ class AStarPlanner(object):
             cur_node = parent
 
         print 'NUM OF EXPANDED NODES: ' + repr(len(states_visited))
-return plan
+        
+        return plan
