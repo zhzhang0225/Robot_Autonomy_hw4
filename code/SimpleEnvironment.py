@@ -26,12 +26,13 @@ class SimpleEnvironment(object):
         self.ConstructActions()
 
     def GenerateFootprintFromControl(self, start_config, control, stepsize=0.01):
-
+        print "Generating footprint from control"
         # Extract the elements of the control
         ul = control.ul
         ur = control.ur
         dt = control.dt
 
+        start_config = numpy.array(start_config)
         # Initialize the footprint
         config = start_config.copy()
         footprint = [numpy.array([0., 0., config[2]])]
@@ -106,6 +107,7 @@ class SimpleEnvironment(object):
             pi = numpy.pi
             # theta = [0.25*pi, 0.5*pi, 0.75*pi, -0.25*pi, -0.5*pi, -0.75*pi]
             # point_rot = [[1,-1,i/0.8] for i in theta[0:4]] + [[-1,1,i/0.8] for i in theta[4:]]
+            print "Constructing actions"
 
             theta = [0.25*pi, 0.5*pi, 0.75*pi, -0.25*pi, -0.5*pi, -0.75*pi]
             point_rot = [[1,-1,i/3.2] for i in theta[0:4]] + [[-1,1,i/3.2] for i in theta[4:]]
@@ -150,6 +152,19 @@ class SimpleEnvironment(object):
         # TODO: Here you will implement a function that
         # computes the distance between the configurations given
         # by the two node ids
+        d = 0
+        thetadiff = 0
+        # TODO: Here you will implement a function that
+        # computes the distance between the configurations given
+        # by the two node ids
+        coordStart = numpy.array(self.discrete_env.NodeIdToGridCoord(start_id))
+        coordEnd = numpy.array(self.discrete_env.NodeIdToGridCoord(end_id))
+        d = numpy.sqrt((coordStart[0] - coordEnd[0])^2+(coordStart[1] - coordEnd[1])^2)
+        thetadiff = coordStart[2] - coordEnd[2]
+        if d > 1.5:
+            dist =d
+        else:
+            dist = d + thetadiff*5
 
         return dist
 
@@ -160,6 +175,6 @@ class SimpleEnvironment(object):
         # TODO: Here you will implement a function that
         # computes the heuristic cost between the configurations
         # given by the two node ids
-
+        cost = self.ComputeDistance(start_id, goal_id)
 
         return cost
