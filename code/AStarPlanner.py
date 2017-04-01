@@ -48,7 +48,7 @@ class AStarPlanner(object):
         successors, succ_acts = self.planning_env.GetSuccessors(start_id)
         came_from_actions.update(succ_acts)
         for next_node in successors:
-            # print next_node
+            print next_node
             plan_cost[next_node] = plan_cost[start_id] + 1
             priority = plan_cost[next_node] + self.planning_env.ComputeHeuristicCost(next_node, goal_id)
             frontier.put((priority, next_node))
@@ -69,6 +69,7 @@ class AStarPlanner(object):
             successors, succ_acts = self.planning_env.GetSuccessors(start_id)
             came_from_actions.update(succ_acts)
             for next_node in successors:
+                print next_node
                 new_cost = plan_cost[cur_node] + 1
                 # self.planning_env.PlotEdge(self.planning_env.discrete_env.NodeIdToConfiguration(cur_node), self.planning_env.discrete_env.NodeIdToConfiguration(next_node))
                 if next_node not in plan_cost  or  new_cost < plan_cost[next_node]:
@@ -85,5 +86,5 @@ class AStarPlanner(object):
             cur_node = parent
 
         print 'NUM OF EXPANDED NODES: ' + repr(len(states_visited))
-        
+
         return plan
