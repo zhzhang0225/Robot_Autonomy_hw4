@@ -159,7 +159,7 @@ class SimpleEnvironment(object):
         # by the two node ids
         coordStart = numpy.array(self.discrete_env.NodeIdToGridCoord(start_id))
         coordEnd = numpy.array(self.discrete_env.NodeIdToGridCoord(end_id))
-        d = numpy.sqrt((coordStart[0] - coordEnd[0])^2+(coordStart[1] - coordEnd[1])^2)
+        d = numpy.sqrt((coordStart[0] - coordEnd[0])**2+(coordStart[1] - coordEnd[1])**2)
         thetadiff = coordStart[2] - coordEnd[2]
         if d > 1.5:
             dist =d
