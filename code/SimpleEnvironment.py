@@ -110,9 +110,10 @@ class SimpleEnvironment(object):
             L = self.herb.wheel_distance
 
             theta = [0.75*pi, 0.5*pi, 0.25*pi, -0.25*pi, -0.5*pi, -0.75*pi]
-            point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:4]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[4:]]
-
-            control_set = [[1, 1, 0.5], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot
+            # point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:4]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[4:]]
+            point_rot = []
+            # control_set = [[1, 1, 1], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot
+            control_set = numpy.array([[1, 1, 0.1], [0.5, 1, 0.1], [1, 0.5, 0.1]])
 
             for c in control_set:
                 ctrl = Control(c[0], c[1], c[2])
@@ -120,7 +121,6 @@ class SimpleEnvironment(object):
                 print "idx", idx, "Footprint: ", footprint[0], footprint[-1]
                 act = Action(ctrl, footprint)
                 self.actions[idx].append(act)
-
 
     def GetSuccessors(self, node_id):
 
