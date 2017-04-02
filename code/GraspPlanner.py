@@ -4,9 +4,16 @@ class GraspPlanner(object):
 
     def __init__(self, robot, base_planner, arm_planner):
         self.robot = robot
-        self.base_planner = base_planner
+        #self.base_planner = base_planner
         self.arm_planner = arm_planner
 
+		# load inverserechability database
+		self.irmodel = inversereachability.InverseReachabilityModel(robot=self.robot)
+		print 'loading irmodel'
+		if not self.irmodel.load():
+			class IrmodelOption:
+				self.irmodel.autogenerate()
+				self.irmodel.load()
             
     def GetBasePoseForObjectGrasp(self, obj):
 
@@ -17,6 +24,7 @@ class GraspPlanner(object):
 
         base_pose = None
         grasp_config = None
+
        
         ###################################################################
         # TODO: Here you will fill in the function to compute
@@ -26,8 +34,28 @@ class GraspPlanner(object):
         self.graspindices = self.gmodel.graspindices
         self.grasps = self.gmodel.grasps
         grasp_config = self.order_grasps_noisy()
-        grasp_config = gmodel.getGlobalGraspTransform(grasp_config, collisionfree=True)
-        
+
+        # Format grasp transform in global frame into 4x4 numpy.array
+        grasp_config = gmodel.getGlobalGraspTransform(grasp_config, collisionfree=True) 
+
+		densityfn,samplerfn,bounds = self.irmodel.computeBaseDistribution(grasp_config)
+
+		# initialize sampling parameters
+		with self.robot:
+		    while base_pose != None:
+		        pose,jointstate = samplerfn(1)
+		        self.robot.SetTransform(pose)
+		        self.robot.SetDOFValues(*jointstate)
+		        # validate that base is not in collision
+		        if not self.manip.CheckIndependentCollision(CollisionReport()):
+		            q = self.manip.FindIKSolution(grasp_config,filteroptions=IkFilterOptions.CheckEnvCollisions)
+		            if q is not None:
+		                base_pose = pose;
+		                #values = self.robot.GetDOFValues()
+		                #values[self.manip.GetArmIndices()] = q
+		                #goals.append((grasp_config,pose,values))
+
+
 
         return base_pose, grasp_config
 
