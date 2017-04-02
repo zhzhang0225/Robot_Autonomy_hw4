@@ -119,7 +119,7 @@ class GraspPlanner(object):
             # print(grasp[self.graspindices.get('performance')])
             print 'Do you want to take this grasp configuration?'
             input = raw_input('[y/n]')
-            if input == 'y' or input == 'Y':
+            if input == 'y':
                 return grasp;    
         
         # ind = 1
