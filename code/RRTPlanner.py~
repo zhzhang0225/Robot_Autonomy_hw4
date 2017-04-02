@@ -8,10 +8,7 @@ class RRTPlanner(object):
     def __init__(self, planning_env, visualize):
         self.planning_env = planning_env
         self.visualize = visualize
-        
-    # Original epsilon value = 0.001
-    # Changed epsilon to 0.5 for simple env (-Theo)
-    # Changed epsilon to  2 for Herb env (-Theo)
+       
 
     def Plan(self, start_config, goal_config, epsilon = .001):
         start_time = time.time()
