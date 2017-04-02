@@ -2,12 +2,12 @@ import logging, openravepy
 import numpy as np
 np.random.seed(0)
 import math
-
+import time
 class GraspPlanner(object):
 
     def __init__(self, robot, base_planner, arm_planner):
         self.robot = robot
-        #self.base_planner = base_planner
+        self.base_planner = base_planner
         self.arm_planner = arm_planner
             
     def GetBasePoseForObjectGrasp(self, obj):
@@ -71,7 +71,7 @@ class GraspPlanner(object):
             exit()
 
         # Now plan to the base pose
-        start_pose = numpy.array(self.base_planner.planning_env.herb.GetCurrentConfiguration())
+        start_pose = np.array(self.base_planner.planning_env.herb.GetCurrentConfiguration())
         base_plan = self.base_planner.Plan(start_pose, base_pose)
         base_traj = self.base_planner.planning_env.herb.ConvertPlanToTrajectory(base_plan)
 
@@ -79,7 +79,7 @@ class GraspPlanner(object):
         self.base_planner.planning_env.herb.ExecuteTrajectory(base_traj)
 
         # Now plan the arm to the grasp configuration
-        start_config = numpy.array(self.arm_planner.planning_env.herb.GetCurrentConfiguration())
+        start_config = np.array(self.arm_planner.planning_env.herb.GetCurrentConfiguration())
         arm_plan = self.arm_planner.Plan(start_config, grasp_config)
         arm_traj = self.arm_planner.planning_env.herb.ConvertPlanToTrajectory(arm_plan)
 
@@ -205,7 +205,7 @@ class GraspPlanner(object):
             with self.gmodel.GripperVisibility(self.gmodel.manip):
                 time.sleep(0.1) # let viewer update?
                 try:
-                    with self.env:
+                    with self.robot.GetEnv():
                         contacts,finalconfig,mindist,volume = self.gmodel.testGrasp(grasp=grasp,translate=True,forceclosure=True)
                         #if mindist == 0:
                         #  print 'grasp is not in force closure!'
@@ -213,7 +213,7 @@ class GraspPlanner(object):
                         self.gmodel.robot.GetController().Reset(0)
                         self.gmodel.robot.SetDOFValues(finalconfig[0])
                         self.gmodel.robot.SetTransform(finalconfig[1])
-                        self.env.UpdatePublishedBodies()
+                        self.robot.GetEnv().UpdatePublishedBodies()
                         time.sleep(delay)
                 except openravepy.planning_error,e:
                     print 'bad grasp!',e
