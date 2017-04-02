@@ -7,13 +7,13 @@ class GraspPlanner(object):
         #self.base_planner = base_planner
         self.arm_planner = arm_planner
 
-		# load inverserechability database
-		self.irmodel = inversereachability.InverseReachabilityModel(robot=self.robot)
-		print 'loading irmodel'
-		if not self.irmodel.load():
-			class IrmodelOption:
-				self.irmodel.autogenerate()
-				self.irmodel.load()
+	# load inverserechability database
+	self.irmodel = inversereachability.InverseReachabilityModel(robot=self.robot)
+	print 'loading irmodel'
+	if not self.irmodel.load():
+	    class IrmodelOption:
+	        self.irmodel.autogenerate()
+	        self.irmodel.load()
             
     def GetBasePoseForObjectGrasp(self, obj):
 
@@ -38,22 +38,19 @@ class GraspPlanner(object):
         # Format grasp transform in global frame into 4x4 numpy.array
         grasp_config = gmodel.getGlobalGraspTransform(grasp_config, collisionfree=True) 
 
-		densityfn,samplerfn,bounds = self.irmodel.computeBaseDistribution(grasp_config)
+	densityfn,samplerfn,bounds = self.irmodel.computeBaseDistribution(grasp_config)
 
-		# initialize sampling parameters
-		with self.robot:
-		    while base_pose != None:
-		        pose,jointstate = samplerfn(1)
-		        self.robot.SetTransform(pose)
-		        self.robot.SetDOFValues(*jointstate)
-		        # validate that base is not in collision
-		        if not self.manip.CheckIndependentCollision(CollisionReport()):
-		            q = self.manip.FindIKSolution(grasp_config,filteroptions=IkFilterOptions.CheckEnvCollisions)
-		            if q is not None:
-		                base_pose = pose;
-		                #values = self.robot.GetDOFValues()
-		                #values[self.manip.GetArmIndices()] = q
-		                #goals.append((grasp_config,pose,values))
+	# initialize sampling parameters
+	with self.robot:
+	    while base_pose != None:
+	        pose,jointstate = samplerfn(1)
+	        self.robot.SetTransform(pose)
+		self.robot.SetDOFValues(*jointstate)
+		# validate that base is not in collision
+		if not self.manip.CheckIndependentCollision(CollisionReport()):
+		    q = self.manip.FindIKSolution(grasp_config,filteroptions=IkFilterOptions.CheckEnvCollisions)
+		    if q is not None:
+		        base_pose = pose;
 
 
 
@@ -61,7 +58,7 @@ class GraspPlanner(object):
 
     def PlanToGrasp(self, obj):
 
-        # Next select a pose for the base and an associated ik for the arm
+    	# Next select a pose for the base and an associated ik for the arm
         base_pose, grasp_config = self.GetBasePoseForObjectGrasp(obj)
 
         if base_pose is None or grasp_config is None:
@@ -148,23 +145,12 @@ class GraspPlanner(object):
                 if (rankG<6):
                     return 0.0
 
-                METRIC = 3
 
-                if (METRIC==1):
-                    # Metric 1: minimum singular value
-                    U, s, V = np.linalg.svd(G, full_matrices=True)
-                    # S = np.diag(s)
-                    score = s[-1] # sigma_min
-                elif (METRIC==2):
-                    # Metric 2: Isotropy
-                    U, s, V = np.linalg.svd(G, full_matrices=True)
-                    score = s[-1]/s[0]
-                else (METRIC==3):
-                    # Metric 3: Volume of grasp map
-                    score =  np.sqrt(np.linalg.det(np.dot(G,np.transpose(G))))
-                    if (math.isnan(score)):
-                        print("We'll set this value to zero.")
-                        score = 0.00
+                # Metric 3: Volume of grasp map
+                score =  np.sqrt(np.linalg.det(np.dot(G,np.transpose(G))))
+                if (math.isnan(score)):
+                    print("We'll set this value to zero.")
+                    score = 0.00
 
                 return score
             except openravepy.planning_error,e:
@@ -201,7 +187,7 @@ class GraspPlanner(object):
         grasp[self.graspindices['igraspdir']] = new_dir
         grasp[self.graspindices['igrasproll']] = new_roll
 
-    return grasp
+        return grasp
 
 
     def show_grasp(self, grasp, delay=30):
