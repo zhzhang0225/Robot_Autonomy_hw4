@@ -45,17 +45,19 @@ class GraspPlanner(object):
 
 	# initialize sampling parameters
 	with self.robot:
-	    while base_pose != None:
+	    while base_pose is None:
 	        pose,jointstate = samplerfn(1)
-	        self.robot.SetTransform(pose)
+	        self.robot.SetTransform(pose[0])
 		self.robot.SetDOFValues(*jointstate)
 		# validate that base is not in collision
-		if not self.manip.CheckIndependentCollision(CollisionReport()):
-		    q = self.manip.FindIKSolution(grasp_config,filteroptions=IkFilterOptions.CheckEnvCollisions)
+		if not self.robot.ikmodel.manip.CheckIndependentCollision(openravepy.CollisionReport()):
+		    q = self.robot.ikmodel.manip.FindIKSolution(grasp_config,filteroptions=openravepy.IkFilterOptions.CheckEnvCollisions)
 		    if q is not None:
-		        base_pose = pose;
+                        print "Found valid pose"
+		        base_pose = pose
 
-
+        print grasp_config
+        print base_pose 
 
         return base_pose, grasp_config
 
