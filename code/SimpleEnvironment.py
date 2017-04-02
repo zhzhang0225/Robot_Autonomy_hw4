@@ -26,7 +26,7 @@ class SimpleEnvironment(object):
         self.ConstructActions()
 
     def GenerateFootprintFromControl(self, start_config, control, stepsize=0.01):
-        print "Generating footprint from control"
+
         # Extract the elements of the control
         ul = control.ul
         ur = control.ur
@@ -41,7 +41,7 @@ class SimpleEnvironment(object):
             # Generate the velocities based on the forward model
             xdot = 0.5 * self.herb.wheel_radius * (ul + ur) * numpy.cos(config[2])
             ydot = 0.5 * self.herb.wheel_radius * (ul + ur) * numpy.sin(config[2])
-            tdot = self.herb.wheel_radius * (ul - ur) / self.herb.wheel_distance
+            tdot = self.herb.wheel_radius * (-ul + ur) / self.herb.wheel_distance
 
             # Feed forward the velocities
             if timecount + stepsize > dt:
@@ -63,7 +63,7 @@ class SimpleEnvironment(object):
         snapped_config = self.discrete_env.NodeIdToConfiguration(nid)
         snapped_config[:2] -= start_config[:2]
         footprint.append(snapped_config)
-
+        # print "Last footprint config = ", config
         return footprint
 
     def PlotActionFootprints(self, idx):
@@ -85,6 +85,7 @@ class SimpleEnvironment(object):
 
 
     def ConstructActions(self):
+        print "Constructing actions"
 
         # Actions is a dictionary that maps orientation of the robot to
         #  an action set
@@ -105,21 +106,20 @@ class SimpleEnvironment(object):
 
             # Control set for grid resolution 0.1
             pi = numpy.pi
-            # theta = [0.25*pi, 0.5*pi, 0.75*pi, -0.25*pi, -0.5*pi, -0.75*pi]
-            # point_rot = [[1,-1,i/0.8] for i in theta[0:4]] + [[-1,1,i/0.8] for i in theta[4:]]
-            print "Constructing actions"
+            r = self.herb.wheel_radius
+            L = self.herb.wheel_distance
 
-            theta = [0.25*pi, 0.5*pi, 0.75*pi, -0.25*pi, -0.5*pi, -0.75*pi]
-            point_rot = [[1,-1,i/3.2] for i in theta[0:4]] + [[-1,1,i/3.2] for i in theta[4:]]
+            theta = [0.75*pi, 0.5*pi, 0.25*pi, -0.25*pi, -0.5*pi, -0.75*pi]
+            point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:4]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[4:]]
 
-            control_set = [[1,1,0.5], [0, 1, pi/1.6], [1, 0, pi/1.6]] + point_rot
+            control_set = [[1, 1, 0.5], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot
 
             for c in control_set:
                 ctrl = Control(c[0], c[1], c[2])
-                footprint = self.GenerateFootprintFromControl(start_config, ctrl)
+                footprint = self.GenerateFootprintFromControl(start_config, ctrl, 0.001)
+                # print "Footprint: ", footprint[0], footprint[-1]
                 act = Action(ctrl, footprint)
                 self.actions[idx].append(act)
-
 
 
     def GetSuccessors(self, node_id):
@@ -131,17 +131,18 @@ class SimpleEnvironment(object):
         #  and return a list of node_ids and controls that represent the neighboring
         #  nodes
 
-        successors = dict()
-        successors[node_id] = []
+        # successors = dict()
+        # successors[node_id] = []
         successor_actions = dict()
         grid_coord = self.discrete_env.NodeIdToGridCoord(node_id)
         possible_actions = self.actions[grid_coord[2]]
 
         for act in possible_actions:
             fp = act.footprint
-            child_node = self.discrete_env.ConfigurationToNodeId(grid_coord+fp[-1])
-            successors[node_id].append(child_node)
-            successor_actions[child_node] = (node_id, act) # Parent-Actoin particular
+            child_node_id = self.discrete_env.ConfigurationToNodeId(fp[-1])
+            # TODO: implement collision checking
+            successors.append(child_node_id)
+            successor_actions[child_node_id] = (node_id, act) # Parent-Action pair
 
         return successors, successor_actions
 
