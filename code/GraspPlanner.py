@@ -8,7 +8,7 @@ class GraspPlanner(object):
         self.arm_planner = arm_planner
 
 	# load inverserechability database
-	self.irmodel = inversereachability.InverseReachabilityModel(robot=self.robot)
+	self.irmodel = openravepy.databases.inversereachability.InverseReachabilityModel(robot=self.robot)
 	print 'loading irmodel'
 	if not self.irmodel.load():
 	    class IrmodelOption:
