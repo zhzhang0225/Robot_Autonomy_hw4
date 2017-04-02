@@ -117,7 +117,7 @@ class SimpleEnvironment(object):
             for c in control_set:
                 ctrl = Control(c[0], c[1], c[2])
                 footprint = self.GenerateFootprintFromControl(start_config, ctrl, 0.001)
-                # print "Footprint: ", footprint[0], footprint[-1]
+                print "idx", idx, "Footprint: ", footprint[0], footprint[-1]
                 act = Action(ctrl, footprint)
                 self.actions[idx].append(act)
 
@@ -131,15 +131,15 @@ class SimpleEnvironment(object):
         #  and return a list of node_ids and controls that represent the neighboring
         #  nodes
 
-        # successors = dict()
-        # successors[node_id] = []
         successor_actions = dict()
-        grid_coord = self.discrete_env.NodeIdToGridCoord(node_id)
-        possible_actions = self.actions[grid_coord[2]]
+        parent_config = numpy.array(self.discrete_env.NodeIdToConfiguration(node_id))
+        parent_coord = self.discrete_env.NodeIdToGridCoord(node_id)
+        # print parent_coord
+        possible_actions = self.actions[parent_coord[2]]
 
         for act in possible_actions:
             fp = act.footprint
-            child_node_id = self.discrete_env.ConfigurationToNodeId(fp[-1])
+            child_node_id = self.discrete_env.ConfigurationToNodeId(parent_config+fp[-1])
             # TODO: implement collision checking
             successors.append(child_node_id)
             successor_actions[child_node_id] = (node_id, act) # Parent-Action pair
@@ -155,15 +155,13 @@ class SimpleEnvironment(object):
         # by the two node ids
         d = 0
         thetadiff = 0
-        # TODO: Here you will implement a function that
-        # computes the distance between the configurations given
-        # by the two node ids
-        coordStart = numpy.array(self.discrete_env.NodeIdToGridCoord(start_id))
-        coordEnd = numpy.array(self.discrete_env.NodeIdToGridCoord(end_id))
-        d = numpy.sqrt((coordStart[0] - coordEnd[0])**2+(coordStart[1] - coordEnd[1])**2)
-        thetadiff = coordStart[2] - coordEnd[2]
+        coordStart = numpy.array(self.discrete_env.NodeIdToConfiguration(start_id))
+        coordEnd = numpy.array(self.discrete_env.NodeIdToConfiguration(end_id))
+        # d = numpy.sqrt((coordStart[0] - coordEnd[0])**2+(coordStart[1] - coordEnd[1])**2)
+        d = numpy.linalg.norm(coordEnd[:2] - coordStart[:2])
+        thetadiff = abs(coordStart[2] - coordEnd[2])
         if d > 1.5:
-            dist =d
+            dist = d
         else:
             dist = d + thetadiff*5
 
