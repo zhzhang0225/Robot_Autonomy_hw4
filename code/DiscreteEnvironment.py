@@ -52,7 +52,7 @@ class DiscreteEnvironment(object):
         coord = [0] * self.dimension
 
         for idx in range(self.dimension):
-            coord[idx] = numpy.floor((config[idx] - self.lower_limits[idx])/self.resolution[idx])
+            coord[idx] = numpy.round((config[idx] - self.lower_limits[idx])/self.resolution[idx])
 
         coord[2] = coord[2] % 8 # Wrap to pi
         return coord

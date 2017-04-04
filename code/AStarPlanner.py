@@ -19,20 +19,10 @@ class AStarPlanner(object):
         #  of dimension k x n where k is the number of waypoints
         #  and n is the dimension of the robots configuration space
 
-        # plan.append(start_config)
-        plan.append(goal_config)
-
-        if self.visualize and hasattr(self.planning_env, 'InitializePlot'):
-            self.planning_env.InitializePlot(goal_config)
-        init_state = self.planning_env.discrete_env.NodeIdToConfiguration(self.planning_env.discrete_env.ConfigurationToNodeId(start_config))
-        goal_state = self.planning_env.discrete_env.NodeIdToConfiguration(self.planning_env.discrete_env.ConfigurationToNodeId(goal_config))
-
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
-        print "Start state = ", start_config, ", init_state=", init_state
-        print "Start ID = ", start_id
+        print "Start ID = ", start_id, "Goal ID", goal_id
 
-        # plan = np.empty((0, start_config.size()))
         goal_found = False
         frontier = PriorityQueue()
         states_visited = [start_id]
@@ -40,9 +30,9 @@ class AStarPlanner(object):
         came_from[start_id] = None
         plan_cost = {}
         plan_cost[start_id] = 0
-        came_from_actions = dict()
+        came_from_actions = {}
 
-        if init_state == goal_state:
+        if start_id == goal_id:
             return plan
 
         # Add initial neighbors to the frontier
@@ -74,7 +64,7 @@ class AStarPlanner(object):
                 if next_node == start_id:
                     continue
                 new_cost = plan_cost[cur_node] + 1
-                if (next_node not in plan_cost)  or  (new_cost < plan_cost[next_node]):
+                if (next_node not in came_from_actions):  #or  (new_cost < plan_cost[next_node]):
                     plan_cost[next_node] = new_cost
                     priority = new_cost + self.planning_env.ComputeHeuristicCost(next_node, goal_id)
                     frontier.put((priority, next_node))
