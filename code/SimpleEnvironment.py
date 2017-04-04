@@ -112,7 +112,7 @@ class SimpleEnvironment(object):
             theta = [0.75*pi, 0.5*pi, 0.25*pi, -0.25*pi, -0.5*pi, -0.75*pi]
             point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:4]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[4:]]
             # point_rot = []
-            # control_set = [[1, 1, 1], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot
+            # control_set = numpy.array([[1, 1, 1], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot)
             # control_set = numpy.array([[1, 1, 0.5], [0.5, 1, 0.5], [1, 0.5, 0.5]])
             control_set = numpy.array([[1, 1, 0.5]] + point_rot)
 
@@ -140,19 +140,17 @@ class SimpleEnvironment(object):
 
         for act in possible_actions:
             fp = act.footprint
-            child_node_id = self.discrete_env.ConfigurationToNodeId(parent_config+fp[-1])
-            # TODO: implement collision checking
+            # child_node_id = self.discrete_env.ConfigurationToNodeId(fp[-1])
+            child_node_id = self.discrete_env.ConfigurationToNodeId(numpy.append(parent_config[:2],0)+fp[-1])
             with self.robot:
-                # config = self.robot.GetTransform()
                 config = self.discrete_env.NodeIdToConfiguration(child_node_id)
-                
                 self.herb.SetCurrentConfiguration(config)
                 if (self.robot.GetEnv().CheckCollision(self.robot)) is False:
                     successors.append(child_node_id)
                     successor_actions[child_node_id] = (node_id, act) # Parent-Action pair
 
         return successors, successor_actions
-    
+
     def ComputeDistance(self, start_id, end_id):
 
         dist = 0

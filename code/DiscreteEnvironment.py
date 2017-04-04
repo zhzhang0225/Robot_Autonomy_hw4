@@ -69,7 +69,7 @@ class DiscreteEnvironment(object):
             #need to check if logic needs to be in place if the lower limit lines up improperly with the resolution
             # config[idx] = round((coord[idx]*self.resolution[idx])+(self.resolution[idx]/2.0)+self.lower_limits[idx], 4)
             config[idx] = round((coord[idx]*self.resolution[idx])+self.lower_limits[idx], 4)
-        # print config
+
         return config
 
     def GridCoordToNodeId(self,coord):

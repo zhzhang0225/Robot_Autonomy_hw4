@@ -22,6 +22,7 @@ class AStarPlanner(object):
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
         print "Start ID = ", start_id, "Goal ID", goal_id
+        print "Running A* search"
 
         goal_found = False
         frontier = PriorityQueue()
@@ -64,7 +65,7 @@ class AStarPlanner(object):
                 if next_node == start_id:
                     continue
                 new_cost = plan_cost[cur_node] + 1
-                if (next_node not in came_from_actions):  #or  (new_cost < plan_cost[next_node]):
+                if (next_node not in came_from_actions) or  (new_cost < plan_cost[next_node]):
                     plan_cost[next_node] = new_cost
                     priority = new_cost + self.planning_env.ComputeHeuristicCost(next_node, goal_id)
                     frontier.put((priority, next_node))
@@ -72,10 +73,6 @@ class AStarPlanner(object):
                     came_from_actions[next_node] = succ_acts[next_node]
 
         print 'NUM OF EXPANDED NODES: ' + repr(len(states_visited))
-
-        # import IPython
-        # IPython.embed()
-        print "came from actions length = ", len(came_from_actions)
 
         if goal_found:
             while cur_node != start_id or came_from[cur_node] is not None:
