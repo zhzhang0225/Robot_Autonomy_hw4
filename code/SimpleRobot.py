@@ -35,6 +35,7 @@ class SimpleRobot(object):
             config = self.GetCurrentConfiguration()
 
             for fconfig in action.footprint:
+                fconfig = numpy.array(fconfig)
                 new_config = fconfig.copy()
                 new_config[:2] += config[:2]
                 self.SetCurrentConfiguration(new_config)
