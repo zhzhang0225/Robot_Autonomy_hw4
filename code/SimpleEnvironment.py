@@ -143,15 +143,10 @@ class SimpleEnvironment(object):
             child_node_id = self.discrete_env.ConfigurationToNodeId(parent_config+fp[-1])
             # TODO: implement collision checking
             with self.robot:
-                config = self.robot.GetTransform()
+                # config = self.robot.GetTransform()
                 config = self.discrete_env.NodeIdToConfiguration(child_node_id)
                 
-                # herb_base = SimpleRobot(self.discrete_env, self.robot)
-                transform = [[numpy.cos(config[2]), -numpy.sin(config[2]), 0, config[0]],
-                     [numpy.sin(config[2]),  numpy.cos(config[2]), 0, config[1]],
-                     [0, 0, 1, 0],
-                     [0, 0, 0, 1]]
-                self.robot.SetTransform(transform)
+                self.herb.SetCurrentConfiguration(config)
                 if (self.robot.GetEnv().CheckCollision(self.robot)) is False:
                     successors.append(child_node_id)
                     successor_actions[child_node_id] = (node_id, act) # Parent-Action pair
