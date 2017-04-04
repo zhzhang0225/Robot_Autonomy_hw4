@@ -152,21 +152,6 @@ class SimpleEnvironment(object):
 
         return successors, successor_actions
     
-    
-    good_child = []
-        for s in successors:
-            with self.robot:
-                robot_pos = self.robot.GetTransform()
-                robot_pos[0:3,3] = self.discrete_env.NodeIdToConfiguration(s)
-                self.robot.SetTransform(robot_pos)
-                if self.robot.GetEnv().CheckCollision(self.robot) == False:
-                    good_child.append(s)
-
-       
-
-        return good_child, successor_actions
-
-
     def ComputeDistance(self, start_id, end_id):
 
         dist = 0
