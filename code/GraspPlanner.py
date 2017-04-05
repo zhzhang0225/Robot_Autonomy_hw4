@@ -74,8 +74,8 @@ class GraspPlanner(object):
     	# Next select a pose for the base and an associated ik for the arm
         base_pose, grasp_config = self.GetBasePoseForObjectGrasp(obj)
 	print base_pose
-    	gid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(base_pose)
-    	base_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(gid)
+    	#gid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(base_pose)
+    	#base_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(gid)
 
         if base_pose is None or grasp_config is None:
             print 'Failed to find solution'
@@ -83,8 +83,8 @@ class GraspPlanner(object):
 
         # Now plan to the base pose
         start_pose = np.array(self.base_planner.planning_env.herb.GetCurrentConfiguration())
-        sid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(start_pose)
-        start_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(sid)
+        #sid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(start_pose)
+        #start_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(sid)
         
         base_plan = self.base_planner.Plan(start_pose, base_pose)
 
@@ -141,10 +141,9 @@ class GraspPlanner(object):
         #    input = raw_input('[y/n]')
         #    if input == 'y' or input == 'Y':
         #        return grasp;
-	return self.grasps_ordered_noisy[1]    
         
-        # ind = 1
-        # return self.grasps_ordered_noisy[ind]; 
+        ind = 1
+        return self.grasps_ordered_noisy[ind]; 
         
 
 
