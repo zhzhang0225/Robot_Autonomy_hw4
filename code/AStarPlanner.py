@@ -1,112 +1,93 @@
-import sets
-import collections
-import pdb
+import numpy as np
+import time
+from Queue import PriorityQueue
+from SimpleEnvironment import Action
 
 class AStarPlanner(object):
-    
+
     def __init__(self, planning_env, visualize):
         self.planning_env = planning_env
         self.visualize = visualize
         self.nodes = dict()
 
-    def heuristic (self, start_id, end_id, multiple = 5):
-        cost = self.planning_env.ComputeHeuristicCost(start_id, end_id)
-        cost = cost * multiple
-        return cost
-
-    def distance (self, start_id, goal_id):
-        dist = self.planning_env.ComputeDistance(start_id, goal_id)
-        return dist
-    
-    def getConfig (self, iid):
-        config = self.planning_env.discrete_env.NodeIdToConfiguration(iid)
-        return config
-
-    def getLowestId (self, openList, costs): 
-        idx = 1
-        for iid in openList:
-            if idx == 1:
-                lowestId = iid
-                idx += 1
-            elif costs[iid] < costs[lowestId]:
-              lowestId  = iid
-        return lowestId
 
     def Plan(self, start_config, goal_config):
 
         plan = []
 
-        print 'start pose:', start_config
-        print 'goal pose:' , goal_config
-        
         # TODO: Here you will implement the AStar planner
         #  The return path should be a numpy array
         #  of dimension k x n where k is the number of waypoints
         #  and n is the dimension of the robots configuration space
 
-        if self.visualize and hasattr(self.planning_env, 'InitializePlot'):
-            self.planning_env.InitializePlot(goal_config)
-
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
+        print "Start pose = ", start_config 
+        print "Goal pose", goal_config
+        print "Start ID = ", start_id, "Goal ID", goal_id
+        print "Running A* search"
+        start_time = time.time()
 
-        # Open /closed list of nodes / ids
-        openList = collections.deque([start_id])
-        closedList = collections.deque()
-        # Dictionary of edges
-        edges = {}
-        # evaluation cost
-        ecosts = {start_id : 0}
-        # operating cost
-        ocosts = {start_id : 0}
+        goal_found = False
+        frontier = PriorityQueue()
+        states_visited = [start_id]
+        came_from = {}
+        came_from[start_id] = None
+        plan_cost = {}
+        plan_cost[start_id] = 0
+        came_from_actions = {}
 
-        curr_id = start_id
-        while openList:
-            # Get lowest evaluation cost ID
-            curr_id = self.getLowestId (openList, ecosts)
-            # Remove the best curr_id from open, add to closed
-            openList.remove(curr_id)
-            closedList.append(curr_id)
-            # Get neighbors
-            neighbors = self.planning_env.GetSuccessors(curr_id)[0]
+        if start_id == goal_id:
+            return plan
 
-            print "neighbors", neighbors
+        # Add initial neighbors to the frontier
+        successors, succ_acts = self.planning_env.GetSuccessors(start_id)
+        # print successors
+        # came_from_actions.update(succ_acts)
+        for next_node in successors:
+            # print next_node
+            plan_cost[next_node] = plan_cost[start_id] + 1
+            priority = plan_cost[next_node] + self.planning_env.ComputeHeuristicCost(next_node, goal_id)
+            frontier.put((priority, next_node))
+            came_from[next_node] = start_id
+            came_from_actions[next_node] = succ_acts[next_node]
 
-            # early exit
-            if curr_id == goal_id:
-              break
+        while frontier:
+            (cur_cost, cur_node) = frontier.get()
+            states_visited.append(cur_node)
 
-            for neighbor in neighbors:
-                # If neighbor is not visited yet; otherwise, move to next neighbor
-                if neighbor not in closedList:
-                    # If neighbor isn't in openlist, add it, precompute evaluation function, operating cost, connect to graph
-                    if neighbor not in openList:                        
-                        ocosts[neighbor] = self.distance(curr_id, neighbor) + ocosts[curr_id]
-                        ecosts[neighbor] = ocosts[neighbor] + self.heuristic(neighbor, goal_id)
-                        openList.append(neighbor)
-                        edges[neighbor] = curr_id
-                        
-                        # plot edge
-                        if self.visualize:
-                            self.planning_env.PlotEdge(self.planning_env.discrete_env.NodeIdToConfiguration(curr_id),\
-                                                       self.planning_env.discrete_env.NodeIdToConfiguration(neighbor), 'k')
+            if cur_node == goal_id:
+                goal_found = True
+                print "Goal Found!"
+                break
 
-                    # if neighbor is in open list, then see if it is closer to beginning now than before
-                    else:
-                        currcost = ocosts[neighbor]
-                        updatecost = ocosts[curr_id] + self.distance(curr_id, neighbor)
-                        if updatecost < currcost:
-                            edges[neighbor] = curr_id
+            successors, succ_acts = self.planning_env.GetSuccessors(cur_node)
+            # print successors
+            # came_from_actions.update(succ_acts)
+            for next_node in successors:
+                # print next_node
+                if next_node == start_id:
+                    continue
+                new_cost = plan_cost[cur_node] + 1
+                if (next_node not in came_from_actions) or  (new_cost < plan_cost[next_node]):
+                    plan_cost[next_node] = new_cost
+                    priority = new_cost + self.planning_env.ComputeHeuristicCost(next_node, goal_id)
+                    frontier.put((priority, next_node))
+                    came_from[next_node] = cur_node
+                    came_from_actions[next_node] = succ_acts[next_node]
 
-                     
-        plan_id = goal_id
-        print "nodes expanded: %d" % len(edges)
-        while plan_id != start_id:
-            config = self.getConfig(plan_id)
-            plan.append(config)
-            plan_id = edges[plan_id]
-            
-        plan.append(start_config)
-        plan = plan[::-1]
-        plan.append(goal_config)
+        print 'NUM OF EXPANDED NODES: ' + repr(len(states_visited))
+
+        if goal_found:
+            while cur_node != start_id or came_from[cur_node] is not None:
+                parent, action = came_from_actions[cur_node]
+                plan = [action] + plan
+                cur_node = parent
+        else:
+            print "Path not found"
+
+        planning_time = time.time() - start_time
+        print "Planning time = ",planning_time, "secs"
+        print "Returning path"
+
         return plan
