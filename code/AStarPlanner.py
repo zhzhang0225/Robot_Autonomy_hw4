@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from Queue import PriorityQueue
 from SimpleEnvironment import Action
 
@@ -21,8 +22,10 @@ class AStarPlanner(object):
 
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
+        print "Start config = ", start_config, "Goal config", goal_config
         print "Start ID = ", start_id, "Goal ID", goal_id
         print "Running A* search"
+        start_time = time.time()
 
         goal_found = False
         frontier = PriorityQueue()
@@ -82,6 +85,8 @@ class AStarPlanner(object):
         else:
             print "Path not found"
 
+        planning_time = time.time() - start_time
+        print "Planning time = ",planning_time, "secs"
         print "Returning path"
 
         return plan
