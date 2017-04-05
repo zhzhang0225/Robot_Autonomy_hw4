@@ -64,6 +64,7 @@ class SimpleEnvironment(object):
         snapped_config[:2] -= start_config[:2]
         footprint.append(snapped_config)
         # print "Last footprint config = ", config
+        
         return footprint
 
     def PlotActionFootprints(self, idx):
