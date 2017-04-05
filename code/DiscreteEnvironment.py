@@ -54,7 +54,7 @@ class DiscreteEnvironment(object):
         for idx in range(self.dimension):
             coord[idx] = numpy.round((config[idx] - self.lower_limits[idx])/self.resolution[idx])
 
-        coord[2] = coord[2] % 8 # Wrap to pi
+        # coord[2] = coord[2] % 8 # Wrap to pi
         return coord
 
     def GridCoordToConfiguration(self, coord):
@@ -98,5 +98,5 @@ class DiscreteEnvironment(object):
             coord[idx] = shifted % (numpy.power(10,numpy.ceil(numpy.log10(self.num_cells[idx]))))
             shift_accum *= numpy.power(10,numpy.ceil(numpy.log10(self.num_cells[idx])))
 
-        coord[2] = coord[2] % 8 # Wrap to pi
+        # coord[2] = coord[2] % 8 # Wrap to pi
         return coord

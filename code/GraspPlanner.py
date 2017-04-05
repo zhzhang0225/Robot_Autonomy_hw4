@@ -123,7 +123,7 @@ class GraspPlanner(object):
             print("evalauting grasp " + str(i))
             orig_score = self.eval_grasp(grasp)
             trials = [orig_score]
-            for i in range(5):
+            for i in range(3):
                 noisy_grasp = self.sample_random_grasp(grasp)
                 trials.append(self.eval_grasp(noisy_grasp)) # add noise
 
