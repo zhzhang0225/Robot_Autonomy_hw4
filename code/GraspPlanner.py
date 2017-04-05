@@ -97,6 +97,8 @@ class GraspPlanner(object):
 
         print start_config
 
+        goal_config = numpy.array([ 3.68, -1.90,  0.00,  2.20,  0.00,  0.00,  0.00 ])
+
         arm_plan = self.arm_planner.Plan(start_config, grasp_config)
         arm_traj = self.arm_planner.planning_env.herb.ConvertPlanToTrajectory(arm_plan)
 
@@ -120,7 +122,7 @@ class GraspPlanner(object):
             print("evalauting grasp " + str(i))
             orig_score = self.eval_grasp(grasp)
             trials = [orig_score]
-            for i in range(5):
+            for i in range(3):
                 noisy_grasp = self.sample_random_grasp(grasp)
                 trials.append(self.eval_grasp(noisy_grasp)) # add noise
 

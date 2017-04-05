@@ -27,11 +27,8 @@ class RRTConnectPlanner(object):
         #  and n is the dimension of the robots configuration space
 
 
-        print 'start config (arm):'
-        print start_config
-        print 'goal config (arm):'
-        print goal_config
-
+        print "startConfig = [%.2f, %.2f]" %(start_config[0], start_config[1])
+        print "goalConfig = [%.2f, %.2f]" %(goal_config[0], goal_config[1])
         disc = True;
         while (disc):
             if(random.random() < 0.95):
@@ -44,6 +41,7 @@ class RRTConnectPlanner(object):
             if (extension != None):
                 extIDf = ftree.AddVertex(extension);
                 ftree.AddEdge(nearID, extIDf);
+                #self.planning_env.PlotEdge(nearConfig, extension);
             
             #if(numpy.array_equal(extension, goal_config)):
             #    disc = False
@@ -58,6 +56,7 @@ class RRTConnectPlanner(object):
             if (extension != None):
                 extIDr = rtree.AddVertex(extension);
                 rtree.AddEdge(nearID, extIDr);
+                #self.planning_env.PlotEdge(nearConfig, extension);
             
             #if(numpy.array_equal(extension, start_config)):
             #    disc = False
@@ -68,7 +67,7 @@ class RRTConnectPlanner(object):
                     if (numpy.array_equal(lastlink,ftree.vertices[i])):
                         lastIDr = rtree.AddVertex(lastlink);
                         rtree.AddEdge(extIDr, lastIDr);
-
+                        #self.planning_env.PlotEdge(extension, lastlink);
                         disc = False
                         extIDf = i
                         expansions+=1
@@ -100,8 +99,4 @@ class RRTConnectPlanner(object):
             print "fconfig = [%.2f, %.2f]" %(config[0], config[1])
         print("--- %s seconds ---" % (time.time() - start_time))
         print "Total expansions = %d" %(expansions)
-        print("--- %s seconds ---" % (time.time() - start_time))
-        print("--- %s path length ---" % len(plan))
-        print("--- %s vertices ---" % (len(ftree.vertices) + len(rtree.vertices) - 1))
-
         return plan

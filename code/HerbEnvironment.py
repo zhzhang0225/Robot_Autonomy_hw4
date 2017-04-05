@@ -3,7 +3,6 @@ import time
 class HerbEnvironment(object):
     
     def __init__(self, herb):
-        self.herb = herb
         self.robot = herb.robot
 
         # set the camera
@@ -47,7 +46,7 @@ class HerbEnvironment(object):
         # TODO: Implement a function which attempts to extend from 
         # a start configuration to a goal configuration
         num_dof = len(self.robot.GetActiveDOFIndices())
-        steps = 25
+        steps = 20
 
         if(start_config == None):
             return None
@@ -62,17 +61,20 @@ class HerbEnvironment(object):
             self.robot.SetActiveDOFValues(JointSteps[:,i]);
             
             # Check collision
-            for body in self.robot.GetEnv().GetBodies():
-                if ((body.GetName() != self.robot.GetName() and
-                    self.robot.GetEnv().CheckCollision(self.robot, body)) or
-                    self.robot.CheckSelfCollision()):
+            # for body in self.robot.GetEnv().GetBodies():
+            #     if ((body.GetName() != self.robot.GetName() and
+            #         self.robot.GetEnv().CheckCollision(self.robot, body)) or
+            #         self.robot.CheckSelfCollision()):
+            if (self.robot.GetEnv().CheckCollision(self.robot) or
+                self.robot.CheckSelfCollision()):
                     # Check first step
-                    if (i == 0): 
-                        return None
-                    else:
-                        #JointSteps[dim] = [JointSteps[dim,i-1]] * steps
-                        end_config[:] = JointSteps[:,i-1]
-        
+
+                if (i <= 5): 
+                    return None
+                else:
+                    end_config = JointSteps[:,i-6]
+                    # return None
+
         # No collision detected 
         return numpy.array(end_config)
         
@@ -85,15 +87,15 @@ class HerbEnvironment(object):
         #
         initTime = time.time()
         while(time.time()-initTime<timeout):
-	    ind = 1
-	    while(ind < len(path)-1):
+            ind = 1
+            while(ind < len(path)-1):
                 start_config = path[ind-1]
                 final_config = path[ind+1]
                 config = self.Extend(start_config,final_config)
                 
                 
-		if config != None:
-		    same_bool = 1
+                if config != None:
+                    same_bool = 1
                     for i in range(len(config)):
                         if config[i]!=final_config[i]:
                             same_bool = 0
