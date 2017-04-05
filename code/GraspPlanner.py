@@ -66,8 +66,6 @@ class GraspPlanner(object):
         
         print "grasp_config:"
         print grasp_config 
-        # Once after finding out the final base pose, change the robot back to its initial pose
-        self.robot.SetTransform(init_pose)
         
         return base_pose, grasp_config
 
@@ -82,11 +80,6 @@ class GraspPlanner(object):
 
         # Now plan to the base pose
         start_pose = np.array(self.base_planner.planning_env.herb.GetCurrentConfiguration())
-        
-        print 'Start pose:' 
-        print start_pose
-        print 'Goal pose:'
-        print base_pose
         
         base_plan = self.base_planner.Plan(start_pose, base_pose)
 

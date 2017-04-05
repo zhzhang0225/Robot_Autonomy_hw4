@@ -22,7 +22,8 @@ class AStarPlanner(object):
 
         start_id = self.planning_env.discrete_env.ConfigurationToNodeId(start_config)
         goal_id = self.planning_env.discrete_env.ConfigurationToNodeId(goal_config)
-        print "Start config = ", start_config, "Goal config", goal_config
+        print "Start pose = ", start_config 
+        print "Goal pose", goal_config
         print "Start ID = ", start_id, "Goal ID", goal_id
         print "Running A* search"
         start_time = time.time()
