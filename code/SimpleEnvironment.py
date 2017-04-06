@@ -183,7 +183,7 @@ class SimpleEnvironment(object):
         # computes the heuristic cost between the configurations
         # given by the two node ids
         coordStart = numpy.array(self.discrete_env.NodeIdToConfiguration(start_id))
-        coordEnd = numpy.array(self.discrete_env.NodeIdToConfiguration(end_id))
+        coordEnd = numpy.array(self.discrete_env.NodeIdToConfiguration(goal_id))
         d = numpy.linalg.norm(coordEnd[:2] - coordStart[:2])
         thetadiff = abs(coordStart[2] - coordEnd[2])
         if d > 0.5:
