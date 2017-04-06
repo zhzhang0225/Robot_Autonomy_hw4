@@ -1,7 +1,7 @@
-import numpy 
+import numpy
 import time
 class HerbEnvironment(object):
-    
+
     def __init__(self, herb):
         self.herb = herb
         self.robot = herb.robot
@@ -12,14 +12,14 @@ class HerbEnvironment(object):
                                    [ 0.02023372, -0.9431516 , -0.33174637,  1.61502194],
                                    [ 0.        ,  0.        ,  0.        ,  1.        ]])
         self.robot.GetEnv().GetViewer().SetCamera(camera_pose)
-        
+
         # goal sampling probability
         self.p = 0.0
 
     def SetGoalParameters(self, goal_config, p = 0.2):
         self.goal_config = goal_config
         self.p = p
-        
+
 
     def GenerateRandomConfiguration(self):
         num_dof = len(self.robot.GetActiveDOFIndices())
@@ -34,17 +34,17 @@ class HerbEnvironment(object):
         return numpy.array(config)
 
 
-    
+
     def ComputeDistance(self, start_config, end_config):
-        
+
         # TODO: Implement a function which computes the distance between two configurations
 
         return numpy.linalg.norm(numpy.array(start_config) - numpy.array(end_config));
 
 
     def Extend(self, start_config, end_config):
-        
-        # TODO: Implement a function which attempts to extend from 
+
+        # TODO: Implement a function which attempts to extend from
         # a start configuration to a goal configuration
         num_dof = len(self.robot.GetActiveDOFIndices())
         steps = 20
@@ -60,46 +60,30 @@ class HerbEnvironment(object):
 
         for i in range(steps):
             self.robot.SetActiveDOFValues(JointSteps[:,i]);
-            
+
             # Check collision
-<<<<<<< HEAD
             for body in self.robot.GetEnv().GetBodies():
-                if ((body.GetName() != 'fuze_bottle' and 
+                if ((body.GetName() != 'fuze_bottle' and
                     self.robot.GetEnv().CheckCollision(self.robot, body)) or
                     self.robot.CheckSelfCollision()):
             #if (self.robot.GetEnv().CheckCollision(self.robot) or
             #    self.robot.CheckSelfCollision()):
                     # Check first step
 
-                    if (i <= 5): 
+                    if (i <= 5):
                         return None
                     else:
                         end_config = JointSteps[:,i-6]
                         # return None
-=======
-            # for body in self.robot.GetEnv().GetBodies():
-            #     if ((body.GetName() != self.robot.GetName() and
-            #         self.robot.GetEnv().CheckCollision(self.robot, body)) or
-            #         self.robot.CheckSelfCollision()):
-            if (self.robot.GetEnv().CheckCollision(self.robot) or
-                self.robot.CheckSelfCollision()):
-                    # Check first step
 
-                if (i <= 5): 
-                    return None
-                else:
-                    end_config = JointSteps[:,i-6]
-                    # return None
->>>>>>> master
-
-        # No collision detected 
+        # No collision detected
         return numpy.array(end_config)
-        
+
     def ShortenPath(self, path, timeout=5.0):
-        
-        # 
+
+        #
         # TODO: Implement a function which performs path shortening
-        #  on the given path.  Terminate the shortening after the 
+        #  on the given path.  Terminate the shortening after the
         #  given timout (in seconds).
         #
         initTime = time.time()
@@ -109,8 +93,8 @@ class HerbEnvironment(object):
                 start_config = path[ind-1]
                 final_config = path[ind+1]
                 config = self.Extend(start_config,final_config)
-                
-                
+
+
                 if config != None:
                     same_bool = 1
                     for i in range(len(config)):
@@ -119,6 +103,6 @@ class HerbEnvironment(object):
                     if same_bool ==1:
                         del path[ind]
 	        ind = ind + 1
-                
-            
+
+
         return path

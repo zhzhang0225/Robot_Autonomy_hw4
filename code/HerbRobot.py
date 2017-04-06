@@ -19,7 +19,7 @@ class HerbRobot(object):
         return self.robot.GetActiveDOFValues()
 
     def ConvertPlanToTrajectory(self, plan):
-        
+
         # Create a trajectory
         traj = openravepy.RaveCreateTrajectory(self.robot.GetEnv(), 'GenericTrajectory')
         config_spec = self.robot.GetActiveConfigurationSpecification()

@@ -64,7 +64,7 @@ class SimpleEnvironment(object):
         snapped_config[:2] -= start_config[:2]
         footprint.append(snapped_config)
         # print "Last footprint config = ", config
-        
+
         return footprint
 
     def PlotActionFootprints(self, idx):
@@ -121,14 +121,9 @@ class SimpleEnvironment(object):
             theta = numpy.array([7*pi/8, 6*pi/8, 5*pi/8, 4*pi/8, 3*pi/8, 2*pi/8, 1*pi/8, -1*pi/8, -2*pi/8, -3*pi/8, -4*pi/8, -5*pi/8, -6*pi/8, -7*pi/8])
             point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:7]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[7:]]
             # point_rot = []
-<<<<<<< HEAD
             # control_set = numpy.array([[1, 1, 1], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot)
             # control_set = numpy.array([[1, 1, 0.5], [0.5, 1, 0.5], [1, 0.5, 0.5]])
             control_set = numpy.array([[1, 1, 0.5]] + point_rot)
-=======
-            control_set = numpy.array([[1, 1, 0.4/r],[1, 1, 0.2/r],[-1, -1, 0.2/r], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot)
-            #control_set = numpy.array([[1, 1, 0.5]] + point_rot)
->>>>>>> master
 
             for c in control_set:
                 ctrl = Control(c[0], c[1], c[2])
@@ -137,11 +132,7 @@ class SimpleEnvironment(object):
                 act = Action(ctrl, footprint)
                 self.actions[idx].append(act)
 
-<<<<<<< HEAD
 	    #self.PlotActionFootprints(idx)
-=======
-        self.PlotActionFootprints(4)
->>>>>>> master
 
     def GetSuccessors(self, node_id):
 

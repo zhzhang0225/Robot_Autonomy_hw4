@@ -22,7 +22,7 @@ class DiscreteEnvironment(object):
 
 
     def ConfigurationToNodeId(self, config):
-        
+
         # TODO:
         # This function maps a node configuration in full configuration
         # space to a node in discrete space
@@ -31,16 +31,16 @@ class DiscreteEnvironment(object):
         return node_id
 
     def NodeIdToConfiguration(self, nid):
-        
+
         # TODO:
         # This function maps a node in discrete space to a configuraiton
         # in the full configuration space
         #
         config = self.GridCoordToConfiguration(self.NodeIdToGridCoord(nid))
         return config
-        
+
     def ConfigurationToGridCoord(self, config):
-        
+
         # TODO:
         # This function maps a configuration in the full configuration space
         # to a grid coordinate in discrete space
@@ -54,7 +54,7 @@ class DiscreteEnvironment(object):
         return coord
 
     def GridCoordToConfiguration(self, coord):
-        
+
         # TODO:
         # This function smaps a grid coordinate in discrete space
         # to a configuration in the full configuration space
@@ -65,14 +65,14 @@ class DiscreteEnvironment(object):
         return config
 
     def GridCoordToNodeId(self,coord):
-        
+
         # TODO:
         # This function maps a grid coordinate to the associated
-        # node id 
+        # node id
         #node_id = numpy.ravel_multi_index((coord),dims=(self.num_cells),order='F')
-        node_id = 0 
-        multiple = 1 
-    
+        node_id = 0
+        multiple = 1
+
         for idx in range(self.dimension):
             node_id += coord[idx] * multiple
             multiple = multiple * self.num_cells[idx]
@@ -80,7 +80,7 @@ class DiscreteEnvironment(object):
         return node_id
 
     def NodeIdToGridCoord(self, node_id):
-        
+
         # TODO:
         # This function maps a node id to the associated
         # grid coordinate
@@ -94,6 +94,6 @@ class DiscreteEnvironment(object):
             remaining = remaining%product
 
         return coord
-        
-        
+
+
         

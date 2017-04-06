@@ -10,7 +10,7 @@ class PlanningNode(object):
         self.action = None
 
 class OpenList(object):
-    
+
     def __init__(self):
         self.list = dict()
 
