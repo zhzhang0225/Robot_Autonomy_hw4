@@ -74,8 +74,6 @@ class GraspPlanner(object):
         
         print "grasp_config:"
         print grasp_config 
-        # Once after finding out the final base pose, change the robot back to its initial pose
-        self.robot.SetTransform(init_pose)
         
         return base_pose, grasp_config
 
@@ -83,6 +81,9 @@ class GraspPlanner(object):
 
     	# Next select a pose for the base and an associated ik for the arm
         base_pose, grasp_config = self.GetBasePoseForObjectGrasp(obj)
+	print base_pose
+    	#gid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(base_pose)
+    	#base_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(gid)
 
         if base_pose is None or grasp_config is None:
             print 'Failed to find solution'
@@ -90,11 +91,16 @@ class GraspPlanner(object):
 
         # Now plan to the base pose
         start_pose = np.array(self.base_planner.planning_env.herb.GetCurrentConfiguration())
+<<<<<<< HEAD
         sid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(start_pose)
         start_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(sid)
 
         gid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(base_pose)
         base_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(gid)
+=======
+        #sid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(start_pose)
+        #start_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(sid)
+>>>>>>> master
         
         base_plan = self.base_planner.Plan(start_pose, base_pose)
 
@@ -117,7 +123,7 @@ class GraspPlanner(object):
         # Grasp the bottle
         task_manipulation = openravepy.interfaces.TaskManipulation(self.robot)
         task_manipulation.CloseFingers()
-    
+   
 
 
     ############################################################################
@@ -130,6 +136,7 @@ class GraspPlanner(object):
         for i,grasp in enumerate(self.grasps_ordered_noisy):
             print("evalauting grasp " + str(i))
             orig_score = self.eval_grasp(grasp)
+<<<<<<< HEAD
             #trials = [orig_score]
             #for i in range(3):
             #    noisy_grasp = self.sample_random_grasp(grasp)
@@ -140,22 +147,32 @@ class GraspPlanner(object):
             #grasp[self.graspindices.get('performance')] = noise_score # assign combined score
             
             grasp[self.graspindices.get('performance')] = orig_score;
+=======
+            trials = [orig_score]
+            for i in range(3):
+                noisy_grasp = self.sample_random_grasp(grasp)
+                trials.append(self.eval_grasp(noisy_grasp)) # add noise
+
+            trials = np.array(trials)
+            noise_score = np.mean(trials)
+            grasp[self.graspindices.get('performance')] = noise_score # assign combined score
+>>>>>>> master
 
         # sort!
         order = np.argsort(self.grasps_ordered_noisy[:,self.graspindices.get('performance')[0]]) # why [0] here?
         order = order[::-1] # reverse to descending order
         self.grasps_ordered_noisy = self.grasps_ordered_noisy[order]
 
-        for grasp in self.grasps_ordered_noisy:
-            self.show_grasp(grasp)
-            # print(grasp[self.graspindices.get('performance')])
-            print 'Do you want to take this grasp configuration?'
-            input = raw_input('[y/n]')
-            if input == 'y' or input == 'Y':
-                return grasp;    
+        #for grasp in self.grasps_ordered_noisy:
+        #    self.show_grasp(grasp)
+        #    # print(grasp[self.graspindices.get('performance')])
+        #    print 'Do you want to take this grasp configuration?'
+        #    input = raw_input('[y/n]')
+        #    if input == 'y' or input == 'Y':
+        #        return grasp;
         
-        # ind = 1
-        # return self.grasps_ordered_noisy[ind]; 
+        ind = 1
+        return self.grasps_ordered_noisy[ind]; 
         
 
 

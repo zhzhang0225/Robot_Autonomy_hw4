@@ -62,6 +62,7 @@ class HerbEnvironment(object):
             self.robot.SetActiveDOFValues(JointSteps[:,i]);
             
             # Check collision
+<<<<<<< HEAD
             for body in self.robot.GetEnv().GetBodies():
                 if ((body.GetName() != 'fuze_bottle' and 
                     self.robot.GetEnv().CheckCollision(self.robot, body)) or
@@ -75,6 +76,21 @@ class HerbEnvironment(object):
                     else:
                         end_config = JointSteps[:,i-6]
                         # return None
+=======
+            # for body in self.robot.GetEnv().GetBodies():
+            #     if ((body.GetName() != self.robot.GetName() and
+            #         self.robot.GetEnv().CheckCollision(self.robot, body)) or
+            #         self.robot.CheckSelfCollision()):
+            if (self.robot.GetEnv().CheckCollision(self.robot) or
+                self.robot.CheckSelfCollision()):
+                    # Check first step
+
+                if (i <= 5): 
+                    return None
+                else:
+                    end_config = JointSteps[:,i-6]
+                    # return None
+>>>>>>> master
 
         # No collision detected 
         return numpy.array(end_config)

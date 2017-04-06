@@ -9,7 +9,7 @@ from SimpleEnvironment import SimpleEnvironment
 from GraspPlanner import GraspPlanner
 from AStarPlanner import AStarPlanner
 # TODO: Import the applicable RRTPlanner -done
-from RRTConnectPlanner import RRTConnectPlanner
+from RRTPlanner import RRTPlanner
 
 
 if __name__ == "__main__":
@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='script for testing planners')
     parser.add_argument('--test', type=int, default=1,
                         help='The test to run')
-    parser.add_argument('--hres', type=float, default=0.1,
+    parser.add_argument('--hres', type=float, default=0.5,
                         help='xy resolution')
     parser.add_argument('--tres', type=float, default=numpy.pi/8.,
                         help='angular resolution')
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     base_env = SimpleEnvironment(herb_base, resolution)
 
     base_planner = AStarPlanner(base_env, visualize = False)
-    arm_planner = RRTConnectPlanner(arm_env, visualize =False)
+    arm_planner = RRTPlanner(arm_env, visualize =False)
     # TODO: Here initialize your arm planner - done
   
     # add a table and move the robot into place
