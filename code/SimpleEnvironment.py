@@ -70,16 +70,22 @@ class SimpleEnvironment(object):
     def PlotActionFootprints(self, idx):
 
         actions = self.actions[idx]
-        fig = pl.figure()
+        fig = pl.figure(1)
         lower_limits, upper_limits = self.boundary_limits
         pl.xlim([lower_limits[0], upper_limits[0]])
         pl.ylim([lower_limits[1], upper_limits[1]])
-
+	i = 0
         for action in actions:
             xpoints = [config[0] for config in action.footprint]
             ypoints = [config[1] for config in action.footprint]
-            pl.plot(xpoints, ypoints, 'k')
-
+            if(i == 0):
+                pl.plot(xpoints, ypoints, 'k')
+            if(i == 1):
+                pl.plot(xpoints, ypoints, 'r')
+            if(i == 2):
+                pl.plot(xpoints, ypoints, 'y')
+            pl.plot(xpoints, ypoints, 'b')
+            i +=  1
         pl.ion()
         pl.show()
 
@@ -110,8 +116,10 @@ class SimpleEnvironment(object):
             r = self.herb.wheel_radius
             L = self.herb.wheel_distance
 
-            theta = [0.75*pi, 0.5*pi, 0.25*pi, -0.25*pi, -0.5*pi, -0.75*pi]
-            point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:4]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[4:]]
+            # theta = [0.75*pi, 0.5*pi, 0.25*pi, -0.25*pi, -0.5*pi, -0.75*pi]
+            # point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:3]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[3:]]
+            theta = numpy.array([7*pi/8, 6*pi/8, 5*pi/8, 4*pi/8, 3*pi/8, 2*pi/8, 1*pi/8, -1*pi/8, -2*pi/8, -3*pi/8, -4*pi/8, -5*pi/8, -6*pi/8, -7*pi/8])
+            point_rot = [[-1,1,abs(0.5*th*L/r)] for th in theta[0:7]] + [[1,-1,abs(0.5*th*L/r)] for th in theta[7:]]
             # point_rot = []
             # control_set = numpy.array([[1, 1, 1], [0, 1, (pi/4)*L/r], [1, 0, (pi/4)*L/r]] + point_rot)
             # control_set = numpy.array([[1, 1, 0.5], [0.5, 1, 0.5], [1, 0.5, 0.5]])
@@ -123,6 +131,8 @@ class SimpleEnvironment(object):
                 print "idx", idx, "Footprint: ", footprint[0], footprint[-1]
                 act = Action(ctrl, footprint)
                 self.actions[idx].append(act)
+
+	    #self.PlotActionFootprints(idx)
 
     def GetSuccessors(self, node_id):
 

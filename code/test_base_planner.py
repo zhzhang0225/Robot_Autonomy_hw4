@@ -44,6 +44,7 @@ if __name__ == "__main__":
 
     raw_input('Move robot to start config and press enter')
     sid = base_env.discrete_env.ConfigurationToNodeId(herb_base.GetCurrentConfiguration())
+    # sid = base_env.discrete_env.ConfigurationToNodeId(numpy.array([-1.2, 0.8, -0.7854]))
     start_config = base_env.discrete_env.NodeIdToConfiguration(sid)
     herb_base.SetCurrentConfiguration(start_config)
 
@@ -54,6 +55,7 @@ if __name__ == "__main__":
 
     raw_input('Move robot to goal config and press enter')
     gid = base_env.discrete_env.ConfigurationToNodeId(herb_base.GetCurrentConfiguration())
+    # gid = base_env.discrete_env.ConfigurationToNodeId(numpy.array([0.0, 0.4, -3.0]))
     goal_config = base_env.discrete_env.NodeIdToConfiguration(gid)
     herb_base.SetCurrentConfiguration(goal_config)
 

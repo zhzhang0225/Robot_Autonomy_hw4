@@ -36,6 +36,8 @@ class GraspPlanner(object):
         # Format grasp transform in global frame into 4x4 numpy.array
         Tgrasp = self.gmodel.getGlobalGraspTransform(grasp_config, collisionfree=True) 
 
+        print 'Gripper transform', Tgrasp
+
         # load inverserechability database
 	self.irmodel = openravepy.databases.inversereachability.InverseReachabilityModel(robot=self.robot)
 	print 'loading irmodel'
@@ -51,8 +53,13 @@ class GraspPlanner(object):
 	    while base_pose is None:
 	        pose,jointstate = samplerfn(1)
 	        self.robot.SetTransform(pose[0])
+		pose_config = self.base_planner.planning_env.herb.GetCurrentConfiguration()
+		pid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(pose_config)
+        	pose_config = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(pid)
+		self.base_planner.planning_env.herb.SetCurrentConfiguration(pose_config)
+		
                 
-                # print self.robot.GetTransform()
+            # print self.robot.GetTransform()
 
 		self.robot.SetDOFValues(*jointstate)
 		# validate that base is not in collision
@@ -62,6 +69,7 @@ class GraspPlanner(object):
                         print "Found valid pose"
 
                         base_pose = self.base_planner.planning_env.herb.GetCurrentConfiguration()
+                        print 'base pose', base_pose
                         grasp_config = q
         
         print "grasp_config:"
@@ -82,11 +90,11 @@ class GraspPlanner(object):
 
         # Now plan to the base pose
         start_pose = np.array(self.base_planner.planning_env.herb.GetCurrentConfiguration())
-        
-        print 'Start pose:' 
-        print start_pose
-        print 'Goal pose:'
-        print base_pose
+        sid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(start_pose)
+        start_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(sid)
+
+        gid = self.base_planner.planning_env.discrete_env.ConfigurationToNodeId(base_pose)
+        base_pose = self.base_planner.planning_env.discrete_env.NodeIdToConfiguration(gid)
         
         base_plan = self.base_planner.Plan(start_pose, base_pose)
 
@@ -122,14 +130,16 @@ class GraspPlanner(object):
         for i,grasp in enumerate(self.grasps_ordered_noisy):
             print("evalauting grasp " + str(i))
             orig_score = self.eval_grasp(grasp)
-            trials = [orig_score]
-            for i in range(3):
-                noisy_grasp = self.sample_random_grasp(grasp)
-                trials.append(self.eval_grasp(noisy_grasp)) # add noise
+            #trials = [orig_score]
+            #for i in range(3):
+            #    noisy_grasp = self.sample_random_grasp(grasp)
+            #    trials.append(self.eval_grasp(noisy_grasp)) # add noise
 
-            trials = np.array(trials)
-            noise_score = np.mean(trials)
-            grasp[self.graspindices.get('performance')] = noise_score # assign combined score
+            #trials = np.array(trials)
+            #noise_score = np.mean(trials)
+            #grasp[self.graspindices.get('performance')] = noise_score # assign combined score
+            
+            grasp[self.graspindices.get('performance')] = orig_score;
 
         # sort!
         order = np.argsort(self.grasps_ordered_noisy[:,self.graspindices.get('performance')[0]]) # why [0] here?
